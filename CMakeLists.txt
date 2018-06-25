@@ -119,7 +119,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -157,6 +157,8 @@ SET(CMAKE_CXX_FLAGS "-std=c++11 -O2 -g -Wall ${CMAKE_CXX_FLAGS}")
 
 # add_executable(sample_euclidean_cluster src/sample.cpp)
 # target_link_libraries(sample_euclidean_cluster ${catkin_LIBRARIES} ${PCL_LIBRARIES})
+add_executable(test_euclidean_cluster src/test.cpp src/cluster.cpp)
+target_link_libraries(test_euclidean_cluster ${catkin_LIBRARIES} ${PCL_LIBRARIES})
 
 #############
 ## Install ##

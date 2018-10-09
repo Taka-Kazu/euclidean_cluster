@@ -3,6 +3,9 @@
 
 int main()
 {
+	euclidean_cluster::Cluster<pcl::PointXYZ> clusters;
+
+
 	return 0;
 }
 

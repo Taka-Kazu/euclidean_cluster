@@ -24,10 +24,10 @@ namespace euclidean_cluster
 		dspoints_publisher
 			= n.advertise<sensor_msgs::PointCloud2>(tname_dspoints, 1);
 
-		n.param<float>("leafsize", leafsize, 0.05f); // rosparam setのときは"0.05" (数値)
-		n.param<double>("tolerance", tolerance, 0.15);
+		n.param<float>("leafsize", leafsize, 0.08f); // rosparam setのときは"0.07" (数値)
+		n.param<double>("tolerance", tolerance, 0.15); // 大きくすると重くなる
 		n.param<int>("min_cluster_size", min_cluster_size, 20);
-		n.param<int>("max_cluster_size", max_cluster_size, 1600);
+		n.param<int>("max_cluster_size", max_cluster_size, 1300);
 	}
 
 	template <typename PointT>
@@ -50,10 +50,18 @@ namespace euclidean_cluster
 		vg.setInputCloud(pc_sub);
 		vg.setLeafSize(leafsize, leafsize, leafsize);
 		vg.filter(*cloud_filtered);
+		// *cloud_filtered = *pc_sub;
+
+		// z to 0
+		size_t npoints = cloud_filtered->points.size();
+		std::vector<double> org_z(npoints);
+		for(size_t i = 0; i < npoints; ++i){
+			org_z[i] = cloud_filtered->points[i].z;
+			cloud_filtered->points[i].z = 0;
+		}
 
 		// creating the KdTree object
-		typename
-		pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
+		typename pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
 		tree->setInputCloud(cloud_filtered);
 
 		// extract clusters
@@ -66,11 +74,16 @@ namespace euclidean_cluster
 		ec.setInputCloud(cloud_filtered);
 		ec.extract(cluster_indices);
 
+		// restore to original z
+		for(size_t i = 0; i < npoints; ++i){
+			cloud_filtered->points[i].z = org_z[i];
+		}
+
 		indices_pub.clusters.clear();
 		// for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin ();
-		for (auto it = cluster_indices.begin (); it != cluster_indices.end (); ++it){
+		for(auto it : cluster_indices){
 			pcl_msgs::PointIndices indices;
-			pcl_conversions::moveFromPCL(*it, indices);
+			pcl_conversions::moveFromPCL(it, indices);
 			indices_pub.clusters.push_back(indices);
 		}
 	}

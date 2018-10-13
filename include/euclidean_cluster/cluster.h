@@ -16,7 +16,7 @@ namespace euclidean_cluster
 		public:
 		typedef pcl::PointCloud<PointT> PointCloud;
 		typedef typename PointCloud::Ptr PointCloudPtr;
-		typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+		// typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
 		Cluster();
 		~Cluster();

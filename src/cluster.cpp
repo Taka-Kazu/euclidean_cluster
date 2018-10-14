@@ -27,7 +27,7 @@ namespace euclidean_cluster
 		n.param<float>("leafsize", leafsize, 0.08f); // rosparam setのときは"0.07" (数値)
 		n.param<double>("tolerance", tolerance, 0.15); // 大きくすると重くなる
 		n.param<int>("min_cluster_size", min_cluster_size, 20);
-		n.param<int>("max_cluster_size", max_cluster_size, 1300);
+		n.param<int>("max_cluster_size", max_cluster_size, 900);
 	}
 
 	template <typename PointT>
@@ -37,6 +37,7 @@ namespace euclidean_cluster
 	template <typename PointT>
 	void Cluster<PointT>::callback(const sensor_msgs::PointCloud2::ConstPtr& msg)
 	{
+		// boost::mutex::scoped_lock(pt_mutex);
 		pcl::fromROSMsg(*msg, *pc_sub);
 		extract();
 		publish();
@@ -86,11 +87,14 @@ namespace euclidean_cluster
 			pcl_conversions::moveFromPCL(it, indices);
 			indices_pub.clusters.push_back(indices);
 		}
+		pcl_conversions::fromPCL(pc_sub->header, indices_pub.header);
 	}
 
 	template <typename PointT>
 	void Cluster<PointT>::publish()
 	{
+		// std::cout << "indices : " << indices_pub.clusters[0] << std::endl;
+		// std::cout << "points : " << cloud_filtered->points[0].x << std::endl;
 		indices_publisher.publish(indices_pub);
 
 		sensor_msgs::PointCloud2 pc2;

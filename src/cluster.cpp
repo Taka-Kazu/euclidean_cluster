@@ -1,6 +1,6 @@
 
-#include <pcl_conversions/pcl_conversions.h>
 #include <pcl_msgs/PointIndices.h>
+#include <pcl_conversions/pcl_conversions.h>
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/filters/voxel_grid.h>
 #include "euclidean_cluster/cluster.h"
@@ -101,5 +101,23 @@ namespace euclidean_cluster
 		pcl::toROSMsg(*cloud_filtered, pc2);
 		dspoints_publisher.publish(pc2);
 	}
+
+	// void toPCL(const IndicesClusters& ic, std::vector<pcl::PointIndices>& vec)
+	// {
+	// 	for(auto cluster : ic.clusters){
+	// 		pcl::PointIndices indices;
+	// 		pcl_conversions::moveToPCL(cluster, indices);
+	// 		vec.push_back(indices);
+	// 	}
+	// }
+    //
+	// void fromPCL(const std::vector<pcl::PointIndices>& vec, IndicesClusters& ic)
+	// {
+	// 	for(auto indices : vec){
+	// 		pcl_msgs::PointIndices cluster;
+	// 		pcl_conversions::moveFromPCL(indices, cluster);
+	// 		ic.clusters.push_back(cluster);
+	// 	}
+	// }
 } // namespace euclidean_cluster
 

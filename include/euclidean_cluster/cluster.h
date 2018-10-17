@@ -6,6 +6,7 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/PointIndices.h>
 #include <euclidean_cluster/IndicesClusters.h>
 // #include <boost/thread.hpp>
 
@@ -57,6 +58,9 @@ namespace euclidean_cluster
 	template class Cluster<pcl::PointNormal>;
 	// template class Cluster<pcl::PointXYZRGBNormal>;
 	template class Cluster<pcl::PointXYZINormal>;
+
+	// void toPCL(const IndicesClusters&, std::vector<pcl::PointIndices>&);
+	// void fromPCL(const std::vector<pcl::PointIndices>&, IndicesClusters&);
 }
 
 #endif

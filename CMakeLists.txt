@@ -11,17 +11,17 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
   pcl_msgs
-  pcl_ros
   message_generation
 )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
-# find_package(PCL 1.8.0 REQUIRED)
-# include_directories(${PCL_INCLUDE_DIRS})
-# link_directories(${PCL_LIBRARY_DIRS})
-# add_definitions(${PCL_DEFINITIONS})
+# find_package(CUDA REQUIRED)
+find_package(PCL 1.8.0 REQUIRED)
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -166,8 +166,7 @@ SET(CMAKE_CXX_FLAGS "-std=c++11 -O2 -g -Wall ${CMAKE_CXX_FLAGS}")
 # add_executable(sample_euclidean_cluster src/sample.cpp)
 # target_link_libraries(sample_euclidean_cluster ${catkin_LIBRARIES} ${PCL_LIBRARIES})
 add_executable(test_euclidean_cluster src/test.cpp src/cluster.cpp)
-target_link_libraries(test_euclidean_cluster ${catkin_LIBRARIES})
-# target_link_libraries(test_euclidean_cluster ${catkin_LIBRARIES} ${PCL_LIBRARIES})
+target_link_libraries(test_euclidean_cluster ${catkin_LIBRARIES} ${PCL_LIBRARIES})
 
 #############
 ## Install ##

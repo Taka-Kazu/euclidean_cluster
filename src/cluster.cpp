@@ -3,6 +3,13 @@
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/filters/voxel_grid.h>
+
+// The GPU specific stuff here
+#include <pcl/gpu/octree/octree.hpp>
+#include <pcl/gpu/containers/device_array.hpp>
+#include <pcl/gpu/segmentation/gpu_extract_clusters.h>
+#include <pcl/gpu/segmentation/impl/gpu_extract_clusters.hpp>
+
 #include "euclidean_cluster/cluster.h"
 
 namespace euclidean_cluster
@@ -51,41 +58,44 @@ namespace euclidean_cluster
 		vg.setInputCloud(pc_sub);
 		vg.setLeafSize(leafsize, leafsize, leafsize);
 		vg.filter(*cloud_filtered);
-		// *cloud_filtered = *pc_sub;
+
+		pcl::PointCloud<pcl::PointXYZ>::Ptr filtered_xyz(new pcl::PointCloud<pcl::PointXYZ>);
+
+		size_t npoints = cloud_filtered->points.size();
+		filtered_xyz->points.resize(npoints);
 
 		// z to 0
-		size_t npoints = cloud_filtered->points.size();
-		std::vector<double> org_z(npoints);
 		for(size_t i = 0; i < npoints; ++i){
-			org_z[i] = cloud_filtered->points[i].z;
-			cloud_filtered->points[i].z = 0;
+			filtered_xyz->points[i].x = cloud_filtered->points[i].x;
+			filtered_xyz->points[i].y = cloud_filtered->points[i].y;
+			filtered_xyz->points[i].z = 0;
 		}
 
-		// creating the KdTree object
-		typename pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
-		tree->setInputCloud(cloud_filtered);
+		// creating the OctTree object
+		pcl::gpu::Octree::PointCloud cloud_device;
+		cloud_device.upload(filtered_xyz->points);
+
+		pcl::gpu::Octree::Ptr octree_device (new pcl::gpu::Octree);
+		octree_device->setCloud(cloud_device);
+		octree_device->build();
 
 		// extract clusters
-		std::vector<pcl::PointIndices> cluster_indices;
-		pcl::EuclideanClusterExtraction<PointT> ec;
-		ec.setClusterTolerance(tolerance);
-		ec.setMinClusterSize(min_cluster_size);
-		ec.setMaxClusterSize(max_cluster_size);
-		ec.setSearchMethod(tree);
-		ec.setInputCloud(cloud_filtered);
-		ec.extract(cluster_indices);
+		std::vector<pcl::PointIndices> cluster_indices_gpu;
+		pcl::gpu::EuclideanClusterExtraction gec;
+		gec.setClusterTolerance(tolerance);
+		gec.setMinClusterSize(min_cluster_size);
+		gec.setMaxClusterSize(max_cluster_size);
+		gec.setSearchMethod(octree_device);
+		gec.setHostCloud(filtered_xyz);
+		gec.extract(cluster_indices_gpu);
 
-		// restore to original z
-		for(size_t i = 0; i < npoints; ++i){
-			cloud_filtered->points[i].z = org_z[i];
-		}
+		size_t nclusters = cluster_indices_gpu.size();
 
-		indices_pub.clusters.clear();
-		// for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin ();
-		for(auto it : cluster_indices){
+		indices_pub.clusters.resize(nclusters);
+		for(size_t i = 0; i < nclusters; ++i){
 			pcl_msgs::PointIndices indices;
-			pcl_conversions::moveFromPCL(it, indices);
-			indices_pub.clusters.push_back(indices);
+			pcl_conversions::moveFromPCL(cluster_indices_gpu[i], indices);
+			indices_pub.clusters[i] = indices;
 		}
 		pcl_conversions::fromPCL(pc_sub->header, indices_pub.header);
 	}

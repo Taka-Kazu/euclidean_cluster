@@ -1,7 +1,6 @@
 
 #include <pcl_msgs/PointIndices.h>
 #include <pcl_conversions/pcl_conversions.h>
-#include <pcl/segmentation/extract_clusters.h>
 #include <pcl/filters/voxel_grid.h>
 
 // The GPU specific stuff here
@@ -31,7 +30,7 @@ namespace euclidean_cluster
 		dspoints_publisher
 			= n.advertise<sensor_msgs::PointCloud2>(tname_dspoints, 1);
 
-		n.param<float>("leafsize", leafsize, 0.08f); // rosparam setのときは"0.07" (数値)
+		n.param<float>("leafsize", leafsize, 0.08f); // rosparam setのときは数値で (like "0.07")
 		n.param<double>("tolerance", tolerance, 0.15); // 大きくすると重くなる
 		n.param<int>("min_cluster_size", min_cluster_size, 20);
 		n.param<int>("max_cluster_size", max_cluster_size, 900);
@@ -44,7 +43,6 @@ namespace euclidean_cluster
 	template <typename PointT>
 	void Cluster<PointT>::callback(const sensor_msgs::PointCloud2::ConstPtr& msg)
 	{
-		// boost::mutex::scoped_lock(pt_mutex);
 		pcl::fromROSMsg(*msg, *pc_sub);
 		extract();
 		publish();
@@ -103,8 +101,6 @@ namespace euclidean_cluster
 	template <typename PointT>
 	void Cluster<PointT>::publish()
 	{
-		// std::cout << "indices : " << indices_pub.clusters[0] << std::endl;
-		// std::cout << "points : " << cloud_filtered->points[0].x << std::endl;
 		indices_publisher.publish(indices_pub);
 
 		sensor_msgs::PointCloud2 pc2;
@@ -112,22 +108,5 @@ namespace euclidean_cluster
 		dspoints_publisher.publish(pc2);
 	}
 
-	// void toPCL(const IndicesClusters& ic, std::vector<pcl::PointIndices>& vec)
-	// {
-	// 	for(auto cluster : ic.clusters){
-	// 		pcl::PointIndices indices;
-	// 		pcl_conversions::moveToPCL(cluster, indices);
-	// 		vec.push_back(indices);
-	// 	}
-	// }
-    //
-	// void fromPCL(const std::vector<pcl::PointIndices>& vec, IndicesClusters& ic)
-	// {
-	// 	for(auto indices : vec){
-	// 		pcl_msgs::PointIndices cluster;
-	// 		pcl_conversions::moveFromPCL(indices, cluster);
-	// 		ic.clusters.push_back(cluster);
-	// 	}
-	// }
 } // namespace euclidean_cluster
 

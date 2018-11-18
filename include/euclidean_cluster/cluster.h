@@ -8,7 +8,6 @@
 #include <pcl/point_types.h>
 #include <pcl/PointIndices.h>
 #include <euclidean_cluster/IndicesClusters.h>
-// #include <boost/thread.hpp>
 
 namespace euclidean_cluster
 {
@@ -18,7 +17,6 @@ namespace euclidean_cluster
 		public:
 		using PointCloud = pcl::PointCloud<PointT>;
 		using PointCloudPtr = typename PointCloud::Ptr;
-		// typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
 		Cluster();
 		~Cluster();
@@ -46,7 +44,6 @@ namespace euclidean_cluster
 		PointCloudPtr pc_sub; // pointcloud subscribed
 		euclidean_cluster::IndicesClusters indices_pub; // cluster indices
 		PointCloudPtr cloud_filtered; // downsampled pointcloud
-		// boost::mutex pt_mutex;
 	};
 
 	template class Cluster<pcl::PointXYZ>;
@@ -58,9 +55,6 @@ namespace euclidean_cluster
 	template class Cluster<pcl::PointNormal>;
 	// template class Cluster<pcl::PointXYZRGBNormal>;
 	template class Cluster<pcl::PointXYZINormal>;
-
-	// void toPCL(const IndicesClusters&, std::vector<pcl::PointIndices>&);
-	// void fromPCL(const std::vector<pcl::PointIndices>&, IndicesClusters&);
 }
 
 #endif

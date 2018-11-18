@@ -24,7 +24,7 @@ namespace euclidean_cluster
 		dspoints_publisher
 			= n.advertise<sensor_msgs::PointCloud2>(tname_dspoints, 1);
 
-		n.param<float>("leafsize", leafsize, 0.08f); // rosparam setのときは"0.07" (数値)
+		n.param<float>("leafsize", leafsize, 0.09f); // rosparam setのときは数値で (like "0.07")
 		n.param<double>("tolerance", tolerance, 0.15); // 大きくすると重くなる
 		n.param<int>("min_cluster_size", min_cluster_size, 20);
 		n.param<int>("max_cluster_size", max_cluster_size, 900);

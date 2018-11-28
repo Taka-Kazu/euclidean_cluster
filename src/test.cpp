@@ -8,6 +8,7 @@ int main(int argc, char** argv)
 	std::cout << "test euclidean cluster" << std::endl;
 
 	euclidean_cluster::Cluster<pcl::PointNormal> clusters;
+	// euclidean_cluster::Cluster<pcl::PointXYZ> clusters;
 
 	ros::spin();
 

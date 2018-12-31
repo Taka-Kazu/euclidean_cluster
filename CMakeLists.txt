@@ -169,6 +169,8 @@ add_executable(test_euclidean_cluster src/test.cpp src/cluster.cpp)
 target_link_libraries(test_euclidean_cluster ${catkin_LIBRARIES})
 # target_link_libraries(test_euclidean_cluster ${catkin_LIBRARIES} ${PCL_LIBRARIES})
 
+add_dependencies(test_euclidean_cluster euclidean_cluster_generate_messages_cpp)
+
 #############
 ## Install ##
 #############

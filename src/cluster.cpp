@@ -41,12 +41,14 @@ namespace euclidean_cluster
 		// boost::mutex::scoped_lock(pt_mutex);
 		pcl::fromROSMsg(*msg, *pc_sub);
     // min_max
+    /*
     pcl::PassThrough<PointT> pass;
     pass.setInputCloud(pc_sub);
     pass.setFilterFieldName("z");
     pass.setFilterLimits(0.2, 1.8);
     pass.setNegative(true);
     pass.filter(*pc_sub);
+    */
 		extract();
 		publish();
 	}

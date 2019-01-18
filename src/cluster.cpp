@@ -45,6 +45,7 @@ namespace euclidean_cluster
     pass.setInputCloud(pc_sub);
     pass.setFilterFieldName("z");
     pass.setFilterLimits(0.2, 1.8);
+    pass.setNegative(true);
     pass.filter(*pc_sub);
 		extract();
 		publish();

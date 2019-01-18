@@ -4,6 +4,7 @@
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/filters/voxel_grid.h>
 #include "euclidean_cluster/cluster.h"
+#include <pcl/filters/passthrough.h>
 
 namespace euclidean_cluster
 {
@@ -39,6 +40,12 @@ namespace euclidean_cluster
 	{
 		// boost::mutex::scoped_lock(pt_mutex);
 		pcl::fromROSMsg(*msg, *pc_sub);
+    // min_max
+    pcl::PassThrough<PointT> pass;
+    pass.setInputCloud(pc_sub);
+    pass.setFilterFieldName("z");
+    pass.setFilterLimits(0.2, 1.8);
+    pass.filter(*pc_sub);
 		extract();
 		publish();
 	}
